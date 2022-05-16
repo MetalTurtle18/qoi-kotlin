@@ -13,7 +13,7 @@ fun main() {
 
 /**
  * Take any png or jpg image and save it as a binary file where each pixel is represented by 3 or 4 bytes, depending on whether the image has an alpha channel
- * @param source the path to the source image
+ * @param source      the path to the source image
  * @param destination the path to the destination binary file
  */
 fun saveUncompressedImage(source: String, destination: String) {
