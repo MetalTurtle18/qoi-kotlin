@@ -5,4 +5,4 @@ A cool image format in a cool language.
 ___
 ## Sources
 * [QOI specification](https://qoiformat.org)
-* [qoi-java](https://github.com/saharNooby/qoi-java) for test images 
+* [qoi-java](https://github.com/saharNooby/qoi-java) for test qoi image `dice.qoi`
