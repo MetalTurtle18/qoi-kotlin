@@ -14,14 +14,22 @@ class QOIImage(
     val width: Int,
     val height: Int,
     val channels: Int,
+    val colorSpace: ColorSpace = ColorSpace.sRGB,
     val data: ByteArrayOutputStream = ByteArrayOutputStream()
 ) {
+    val bitBuffer = BooleanArray(8)
+
     /**
      * Write the given bytes to the byte output stream
      *
      * @param data the bytes to write
      */
-    internal fun writeData(vararg data: Byte) {
+    internal fun writeBytes(vararg data: Byte) {
         this.data.write(ByteArray(data.size) { data[it] })
     }
+}
+
+enum class ColorSpace {
+    sRGB,
+    LINEAR
 }
