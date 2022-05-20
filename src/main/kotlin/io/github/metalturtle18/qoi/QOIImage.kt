@@ -29,6 +29,9 @@ class QOIImage(
     }
 }
 
+/**
+ * An enum class to represent the two colorspace types in a QOI image
+ */
 enum class ColorSpace {
     sRGB,
     LINEAR

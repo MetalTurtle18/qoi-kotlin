@@ -119,6 +119,15 @@ fun BufferedImage.toQoi(): QOIImage {
     return image
 }
 
+/**
+ * Hash function for four color channels according to the QOI specification
+ *
+ * @param r Red channel
+ * @param g Green channel
+ * @param b Blue channel
+ * @param a Alpha channel
+ * @return Hash value
+ */
 fun hash(r: Byte, g: Byte, b: Byte, a: Byte) =
     (r.toUByte().toInt() * 3 +
             g.toUByte().toInt() * 5 +
