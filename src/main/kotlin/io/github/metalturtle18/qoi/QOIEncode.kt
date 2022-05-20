@@ -4,9 +4,9 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 
 const val QOI_OP_INDEX = 0x00
-const val QOI_OP_DIFF = 0x01
-const val QOI_OP_LUMA = 0x02
-const val QOI_OP_RUN = 0x03
+const val QOI_OP_DIFF = 0x40
+const val QOI_OP_LUMA = 0x80
+const val QOI_OP_RUN = 0xC0
 const val QOI_OP_RGB = 0xFE
 const val QOI_OP_RGBA = 0xFF
 
@@ -28,15 +28,15 @@ fun BufferedImage.toQoi(): QOIImage {
     // Temporary variables for encoding
     var color: Color
     var hash: Int
-    var R: Byte = 0
-    var G: Byte = 0
-    var B: Byte = 0
-    var A: Byte = 255.toByte()
+    var r: Byte = 0
+    var g: Byte = 0
+    var b: Byte = 0
+    var a: Byte = -1 // Actually 255 unsigned
 
-    var prevR = R
-    var prevG = G
-    var prevB = B
-    var prevA = A
+    var prevR: Byte = 0
+    var prevG: Byte = 0
+    var prevB: Byte = 0
+    var prevA: Byte = -1 // Actually 255 unsigned
 
     val array = IntArray(64)
 
@@ -67,42 +67,60 @@ fun BufferedImage.toQoi(): QOIImage {
         for (x in 0 until width) {
             // Get pixel color information
             color = Color(getRGB(x, y), hasAlpha)
-            R = color.red.toByte()
-            G = color.green.toByte()
-            B = color.blue.toByte()
+            r = color.red.toByte()
+            g = color.green.toByte()
+            b = color.blue.toByte()
             if (hasAlpha)
-                A = color.alpha.toByte()
-            hash = hash(R, G, B, A)
+                a = color.alpha.toByte()
+            hash = hash(r, g, b, a)
 
             // Encode pixel
             // 1: QOI_OP_INDEX
             if (array[hash] == color.rgb)
-                image.writeBytes((QOI_OP_INDEX or (hash(R, G, B, A) and 0x3F)).toByte())
+                image.writeBytes((QOI_OP_INDEX or (hash(r, g, b, a) and 0x3F)).toByte())
 
             // 2: QOI_OP_DIFF
+            else if (
+                r - prevR <= 1 && r - prevR >= -2 &&
+                g - prevG <= 1 && g - prevG >= -2 &&
+                b - prevB <= 1 && b - prevB >= -2
+            )
+                image.writeBytes(
+                    (QOI_OP_DIFF or
+                            (r - prevR + 2 shl 4) or // Move the two bit red difference into the top two bits of the 6 data bits
+                            (g - prevG + 2 shl 2) or // Move the two bit green difference into the middle two bits of the 6 data bits
+                            (b - prevB + 2) // Two bit blue difference doesn't need to move
+                            ).toByte()
+                )
 
             // 3: QOI_OP_LUMA
+            // TODO
             // 4: QOI_OP_RUN
+            // TODO
 
             // 5: QOI_OP_RGBA
             else if (hasAlpha)
-                image.writeBytes(QOI_OP_RGBA.toByte(), R, G, B, A)
+                image.writeBytes(QOI_OP_RGBA.toByte(), r, g, b, a)
 
             // 6: QOI_OP_RGB
             else
-                image.writeBytes(QOI_OP_RGB.toByte(), R, G, B)
+                image.writeBytes(QOI_OP_RGB.toByte(), r, g, b)
 
             // Add pixel to the running array
             array[hash] = color.rgb
 
             // Change previous pixel values to this pixel
-            prevR = R
-            prevG = G
-            prevB = B
-            prevA = A
+            prevR = r
+            prevG = g
+            prevB = b
+            prevA = a
         }
 
     return image
 }
 
-fun hash(r: Byte, g: Byte, b: Byte, a: Byte) = (r.toUByte().toInt() * 3 + g.toUByte().toInt() * 5 + b.toUByte().toInt() * 7 + a.toUByte().toInt() * 11) % 64 // this seems like there should be a better way TODO
+fun hash(r: Byte, g: Byte, b: Byte, a: Byte) =
+    (r.toUByte().toInt() * 3 +
+            g.toUByte().toInt() * 5 +
+            b.toUByte().toInt() * 7 +
+            a.toUByte().toInt() * 11) % 64 // this seems like there should be a better way TODO
