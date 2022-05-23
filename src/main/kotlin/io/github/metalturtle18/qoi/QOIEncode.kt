@@ -98,9 +98,9 @@ fun BufferedImage.toQoi(): QOIImage {
 
             // 4: QOI_OP_LUMA
             else if (
-                r withinLumaSmallRange prevR &&
+                (r - prevR).toByte() withinLumaSmallRange (g - prevG).toByte() &&
                 g withinLumaLargeRange prevG && // The green diff can be larger
-                b withinLumaSmallRange prevB &&
+                (b - prevB).toByte() withinLumaSmallRange (g - prevG).toByte() &&
                 if (hasAlpha) a == prevA else true
             )
                 image.writeBytes(
