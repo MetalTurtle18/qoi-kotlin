@@ -75,15 +75,18 @@ fun BufferedImage.toQoi(): QOIImage {
             hash = hash(r, g, b, a)
 
             // Encode pixel
-            // 1: QOI_OP_INDEX
+            // 1: QOI_OP_RUN
+            // TODO
+            // 2: QOI_OP_INDEX
             if (array[hash] == color.rgb)
                 image.writeBytes((QOI_OP_INDEX or (hash(r, g, b, a) and 0x3F)).toByte())
 
-            // 2: QOI_OP_DIFF
+            // 3: QOI_OP_DIFF
             else if (
-                r - prevR <= 1 && r - prevR >= -2 &&
-                g - prevG <= 1 && g - prevG >= -2 &&
-                b - prevB <= 1 && b - prevB >= -2
+                r withinDiffRange prevR &&
+                g withinDiffRange prevG &&
+                b withinDiffRange prevB &&
+                if (hasAlpha) a == prevA else true
             )
                 image.writeBytes(
                     (QOI_OP_DIFF or
@@ -93,10 +96,18 @@ fun BufferedImage.toQoi(): QOIImage {
                             ).toByte()
                 )
 
-            // 3: QOI_OP_LUMA
-            // TODO
-            // 4: QOI_OP_RUN
-            // TODO
+            // 4: QOI_OP_LUMA
+            else if (
+                r withinLumaSmallRange prevR &&
+                g withinLumaLargeRange prevG && // The green diff can be larger
+                b withinLumaSmallRange prevB &&
+                if (hasAlpha) a == prevA else true
+            )
+                image.writeBytes(
+                    (QOI_OP_LUMA or g - prevG + 32).toByte(),
+                    (((r - prevR) - (g - prevG) + 8 shl 4) or ((b - prevB) - (g - prevG) + 8)).toByte()
+                )
+
 
             // 5: QOI_OP_RGBA
             else if (hasAlpha)
@@ -128,8 +139,14 @@ fun BufferedImage.toQoi(): QOIImage {
  * @param a Alpha channel
  * @return Hash value
  */
-fun hash(r: Byte, g: Byte, b: Byte, a: Byte) =
+private fun hash(r: Byte, g: Byte, b: Byte, a: Byte) =
     (r.toUByte().toInt() * 3 +
             g.toUByte().toInt() * 5 +
             b.toUByte().toInt() * 7 +
             a.toUByte().toInt() * 11) % 64 // this seems like there should be a better way TODO
+
+private infix fun Byte.withinDiffRange(other: Byte) = this - other <= 1 && this - other >= -2
+
+private infix fun Byte.withinLumaLargeRange(other: Byte) = this - other <= 31 && this - other >= -32
+
+private infix fun Byte.withinLumaSmallRange(other: Byte) = this - other <= 7 && this - other >= -8

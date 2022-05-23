@@ -9,7 +9,7 @@ import javax.imageio.ImageIO
 fun main() {
     // Will be used to compare compression techniques (negative control)
 //    saveUncompressedImage("src/test/resources/test.png", "src/test/resources/test.bin")
-    val qoi = ImageIO.read(File("src/test/resources/colorBurst0.2.jpg")).toQoi()
+    val qoi = ImageIO.read(File("src/test/resources/abstract0.2.jpg")).toQoi()
     FileOutputStream("src/test/resources/test.qoi").use {
         it.write(qoi.data.toByteArray())
     }
@@ -27,7 +27,7 @@ fun saveUncompressedImage(source: String, destination: String) {
     FileOutputStream(destination).use {
         for (y in 0 until image.height)
             for (x in 0 until image.width) {
-                println("Current Pixel: ${y * image.width + x + 1}/${image.width * image.height} (${(y * image.width + x + 1) / (image.width * image.height).toDouble() * 100}%) ($x, $y)")
+//                println("Current Pixel: ${y * image.width + x + 1}/${image.width * image.height} (${(y * image.width + x + 1) / (image.width * image.height).toDouble() * 100}%) ($x, $y)")
                 color = Color(image.getRGB(x, y), image.colorModel.hasAlpha())
                 it.write(color.red)
                 it.write(color.green)
