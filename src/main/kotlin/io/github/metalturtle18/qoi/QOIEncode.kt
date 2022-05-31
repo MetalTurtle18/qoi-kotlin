@@ -35,9 +35,9 @@ fun BufferedImage.toQoi(): QOIImage {
     var b: Byte = 0
     var a: Byte = -1 // Actually 255 unsigned
 
-    var dr: Byte = 0
-    var dg: Byte = 0
-    var db: Byte = 0
+    var dr: Byte
+    var dg: Byte
+    var db: Byte
 
     var prevR = r
     var prevG = g
