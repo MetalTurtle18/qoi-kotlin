@@ -3,4 +3,4 @@
 
 A cool image format in a cool language.
 ___
-[sources](SOURCES.md))
+[sources](SOURCES.md)
