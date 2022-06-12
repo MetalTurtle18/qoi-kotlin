@@ -1,17 +1,17 @@
-package io.github.metalturtle18.qoi
+package io.github.metalturtle18.qoi.core
 
-import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 
 /**
  * A class representing a QOI image
  *
- * @property width    the width of the image
- * @property height   the height of the image
- * @property channels the number of channels in the image
- * @property data     the qoi encoded data of the image
+ * @property width      the width of the image
+ * @property height     the height of the image
+ * @property channels   the number of channels in the image
+ * @property colorSpace the colorspace the image is using; either sRGB or linear
+ * @property data       the qoi encoded data of the image
  */
-class QOIImage(
+class QOIImage internal constructor(
     val width: Int,
     val height: Int,
     val channels: Int,
@@ -37,24 +37,12 @@ class QOIImage(
     internal fun writeBytes(vararg data: Int) {
         writeBytes(*data.map { it.toByte() }.toByteArray())
     }
-}
 
-/**
- * Creates a [QOIImage] from a [BufferedImage]
- *
- * @receiver The [BufferedImage] to be encoded
- */
-fun BufferedImage.toQOI() = QOIImage(width, height, colorModel.numComponents).apply {
-    encodeIterableImage(
-        IterableBufferedImage(this@toQOI),
-        this
-    )
-}
-
-/**
- * An enum class to represent the two colorspace types in a QOI image
- */
-enum class ColorSpace(val value: Byte) {
-    SRGB(0x00),
-    LINEAR(0x01)
+    /**
+     * An enum class to represent the two colorspace types in a QOI image
+     */
+    enum class ColorSpace(val value: Byte) {
+        SRGB(0x00),
+        LINEAR(0x01)
+    }
 }
