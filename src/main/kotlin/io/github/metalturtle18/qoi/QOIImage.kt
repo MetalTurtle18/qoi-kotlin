@@ -1,5 +1,6 @@
 package io.github.metalturtle18.qoi
 
+import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 
 /**
@@ -36,6 +37,18 @@ class QOIImage(
     internal fun writeBytes(vararg data: Int) {
         writeBytes(*data.map { it.toByte() }.toByteArray())
     }
+}
+
+/**
+ * Creates a [QOIImage] from a [BufferedImage]
+ *
+ * @receiver The [BufferedImage] to be encoded
+ */
+fun BufferedImage.toQOI() = QOIImage(width, height, colorModel.numComponents).apply {
+    encodeIterableImage(
+        IterableBufferedImage(this@toQOI),
+        this
+    )
 }
 
 /**

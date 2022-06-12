@@ -9,7 +9,7 @@ import javax.imageio.ImageIO
 fun main() {
     // Will be used to compare compression techniques (negative control)
 //    saveUncompressedImage("src/test/resources/test.png", "src/test/resources/test.bin")
-    val qoi = ImageIO.read(File("src/test/resources/testcard_rgba.png")).toQoi()
+    val qoi = ImageIO.read(File("src/test/resources/testcard_rgba.png")).toQOI()
     FileOutputStream("src/test/resources/test.qoi").use {
         it.write(qoi.data.toByteArray())
     }
