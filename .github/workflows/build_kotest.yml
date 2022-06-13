@@ -22,9 +22,9 @@ jobs:
         with:
           java-version: ${{ matrix.java_version }}
       - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@1.0.4
+        uses: gradle/wrapper-validation-action@v1.0.4
       - name: Gradle Build Action
-        uses: gradle/gradle-build-action@2.2.0
+        uses: gradle/gradle-build-action@v2.2.0
         with:
           cache-disabled: false
           arguments: kotest
