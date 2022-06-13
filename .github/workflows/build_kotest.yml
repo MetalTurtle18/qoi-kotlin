@@ -1,0 +1,31 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Build and test using Kotest on JDK version ${{ matrix.java_version }} on ubuntu
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java_version: ['1.8', '17']
+    steps:
+      - uses: actions/checkout@v2.4.2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3.3.0
+        with:
+          java-version: ${{ matrix.java_version }}
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@1.0.4
+      - name: Gradle Build Action
+        uses: gradle/gradle-build-action@2.2.0
+        with:
+          cache-disabled: false
+          arguments: kotest
+          
