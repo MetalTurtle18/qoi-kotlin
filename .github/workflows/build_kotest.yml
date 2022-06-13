@@ -17,10 +17,11 @@ jobs:
         java_version: ['1.8', '17']
     steps:
       - uses: actions/checkout@v2.4.2
-      - name: Set up JDK 17
+      - name: Set up JDK ${{ matrix.java_version }}
         uses: actions/setup-java@v3.3.0
         with:
           java-version: ${{ matrix.java_version }}
+          distribution: adopt
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1.0.4
       - name: Gradle Build Action
